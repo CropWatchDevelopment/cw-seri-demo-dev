@@ -1,3 +1,4 @@
+"./Core/Src/cropwatch_logo.o"
 "./Core/Src/main.o"
 "./Core/Src/ssd1306.o"
 "./Core/Src/stm32l0xx_hal_msp.o"

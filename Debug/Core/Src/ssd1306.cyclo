@@ -5,9 +5,10 @@
 ../Core/Src/ssd1306.c:125:6:ssd1306_update	5
 ../Core/Src/ssd1306.c:148:6:ssd1306_draw_string	1
 ../Core/Src/ssd1306.c:152:6:ssd1306_draw_string_scaled	7
-../Core/Src/ssd1306.c:181:9:ssd1306_measure_text_width	7
-../Core/Src/ssd1306.c:208:13:ssd1306_draw_char_scaled	7
-../Core/Src/ssd1306.c:233:13:ssd1306_set_pixel	4
-../Core/Src/ssd1306.c:248:23:find_glyph	3
-../Core/Src/ssd1306.c:258:13:ssd1306_send_command	2
-../Core/Src/ssd1306.c:269:13:ssd1306_send_data	6
+../Core/Src/ssd1306.c:181:6:ssd1306_draw_bitmap	6
+../Core/Src/ssd1306.c:197:9:ssd1306_measure_text_width	7
+../Core/Src/ssd1306.c:224:13:ssd1306_draw_char_scaled	7
+../Core/Src/ssd1306.c:249:13:ssd1306_set_pixel	4
+../Core/Src/ssd1306.c:264:23:find_glyph	3
+../Core/Src/ssd1306.c:274:13:ssd1306_send_command	2
+../Core/Src/ssd1306.c:285:13:ssd1306_send_data	6

@@ -28,6 +28,7 @@
 #include "sensirion/sht4x_i2c.h"
 #include "sensirion/sensirion_common.h"
 #include "ssd1306.h"
+#include "cropwatch_logo.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -129,7 +130,22 @@ int main(void)
   ssd1306_init(&hi2c1);
   if (ssd1306_is_initialized()) {
     ssd1306_clear();
-    ssd1306_draw_string_scaled(8, 16, "CROPWATCH", 2U);
+    uint8_t logo_x = (CROPWATCH_LOGO_WIDTH < SSD1306_WIDTH)
+                       ? (uint8_t)((SSD1306_WIDTH - CROPWATCH_LOGO_WIDTH) / 2U)
+                       : 0U;
+    ssd1306_draw_bitmap(logo_x, 0U, CROPWATCH_LOGO_WIDTH, CROPWATCH_LOGO_HEIGHT, cropwatch_logo_bitmap);
+
+    const char* startup_text = "CROPWATCH";
+    uint8_t text_scale = 2U;
+    uint8_t text_width = ssd1306_measure_text_width(startup_text, text_scale);
+    uint8_t text_x = (text_width < SSD1306_WIDTH)
+                       ? (uint8_t)((SSD1306_WIDTH - text_width) / 2U)
+                       : 0U;
+    uint8_t text_height = (uint8_t)(SSD1306_FONT_HEIGHT * text_scale);
+    uint8_t text_y = (text_height < SSD1306_HEIGHT)
+                       ? (uint8_t)(SSD1306_HEIGHT - text_height)
+                       : 0U;
+    ssd1306_draw_string_scaled(text_x, text_y, startup_text, text_scale);
     ssd1306_update();
     HAL_Delay(5000);
     ssd1306_clear();

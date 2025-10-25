@@ -7,7 +7,7 @@
 #define SSD1306_I2C_ADDRESS (0x3CU << 1)  // 0x78 on the wire
 #define SSD1306_PAGE_COUNT  (SSD1306_HEIGHT / 8U)
 #define GLYPH_WIDTH         SSD1306_FONT_WIDTH
-#define GLYPH_HEIGHT        7U
+#define GLYPH_HEIGHT        SSD1306_FONT_HEIGHT
 
 typedef struct {
     char character;
@@ -175,6 +175,22 @@ void ssd1306_draw_string_scaled(uint8_t x, uint8_t y, const char* text, uint8_t 
 
         ssd1306_draw_char_scaled(cursor_x, cursor_y, c, scale);
         cursor_x = (uint8_t)(cursor_x + scaled_width + scaled_spacing);
+    }
+}
+
+void ssd1306_draw_bitmap(uint8_t x, uint8_t y, uint8_t width, uint8_t height, const uint8_t* bitmap) {
+    if (bitmap == NULL || width == 0U || height == 0U) {
+        return;
+    }
+
+    uint8_t bytes_per_row = (uint8_t)((width + 7U) / 8U);
+    for (uint8_t row = 0; row < height; row++) {
+        for (uint8_t col = 0; col < width; col++) {
+            uint8_t byte = bitmap[row * bytes_per_row + (col / 8U)];
+            uint8_t bit_mask = (uint8_t)(0x80U >> (col & 0x07U));
+            bool pixel_on = (byte & bit_mask) != 0U;
+            ssd1306_set_pixel((uint8_t)(x + col), (uint8_t)(y + row), pixel_on);
+        }
     }
 }
 
