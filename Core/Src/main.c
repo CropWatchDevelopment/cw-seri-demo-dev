@@ -29,6 +29,8 @@
 #include "sensirion/sensirion_common.h"
 #include "ssd1306.h"
 #include "cropwatch_logo.h"
+#include "thermometer_icon.h"
+#include "st25dv.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -238,9 +240,32 @@ int main(void)
       ssd1306_clear();
 
       if (temp_line[0] != '\0') {
-        uint8_t temp_width = ssd1306_measure_text_width(temp_line, 2U);
-        uint8_t temp_x = (temp_width < SSD1306_WIDTH) ? (uint8_t)((SSD1306_WIDTH - temp_width) / 2U) : 0U;
-        ssd1306_draw_string_scaled(temp_x, 6, temp_line, 2U);
+        const uint8_t temp_scale = 2U;
+        if (heater_active && strncmp(temp_line, "TEMP ", 5) == 0) {
+          const char* value_text = &temp_line[5];
+          while (*value_text == ' ') {
+            value_text++;
+          }
+
+          if (*value_text != '\0') {
+            uint8_t value_width = ssd1306_measure_text_width(value_text, temp_scale);
+            const uint8_t icon_spacing = 6U;
+            uint16_t total_width = (uint16_t)THERMOMETER_ICON_WIDTH + icon_spacing + value_width;
+            uint8_t start_x = (total_width < SSD1306_WIDTH) ? (uint8_t)((SSD1306_WIDTH - total_width) / 2U) : 0U;
+            uint8_t icon_y = 6U;
+            uint8_t text_x = (uint8_t)(start_x + THERMOMETER_ICON_WIDTH + icon_spacing);
+            ssd1306_draw_bitmap(start_x, icon_y, THERMOMETER_ICON_WIDTH, THERMOMETER_ICON_HEIGHT, thermometer_icon_bitmap);
+            ssd1306_draw_string_scaled(text_x, 6U, value_text, temp_scale);
+          } else {
+            uint8_t temp_width = ssd1306_measure_text_width(temp_line, temp_scale);
+            uint8_t temp_x = (temp_width < SSD1306_WIDTH) ? (uint8_t)((SSD1306_WIDTH - temp_width) / 2U) : 0U;
+            ssd1306_draw_string_scaled(temp_x, 6U, temp_line, temp_scale);
+          }
+        } else {
+          uint8_t temp_width = ssd1306_measure_text_width(temp_line, temp_scale);
+          uint8_t temp_x = (temp_width < SSD1306_WIDTH) ? (uint8_t)((SSD1306_WIDTH - temp_width) / 2U) : 0U;
+          ssd1306_draw_string_scaled(temp_x, 6U, temp_line, temp_scale);
+        }
       }
 
       if (show_humidity && hum_line[0] != '\0') {
@@ -405,15 +430,19 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : B1_Pin */
-  GPIO_InitStruct.Pin = B1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(I2C_ENABLE_GPIO_Port, I2C_ENABLE_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : BTN1_Pin */
+  GPIO_InitStruct.Pin = BTN1_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(BTN1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pin : LD2_Pin */
   GPIO_InitStruct.Pin = LD2_Pin;
@@ -421,6 +450,17 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : I2C_ENABLE_Pin */
+  GPIO_InitStruct.Pin = I2C_ENABLE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(I2C_ENABLE_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_1_IRQn);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
   HAL_NVIC_SetPriority(EXTI4_15_IRQn, 2, 0);
@@ -436,7 +476,7 @@ static bool tick_elapsed(uint32_t now, uint32_t target)
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-  if (GPIO_Pin == B1_Pin) {
+  if (GPIO_Pin == BTN1_Pin) {
     uint32_t now = HAL_GetTick();
     if (!heater_active && !heater_trigger_requested && tick_elapsed(now, heater_next_allowed_ms)) {
       heater_trigger_requested = true;

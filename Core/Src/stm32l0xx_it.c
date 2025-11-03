@@ -141,17 +141,31 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles EXTI line[15:4] interrupts.
+  * @brief This function handles PVD interrupt through EXTI line 16.
   */
-void EXTI4_15_IRQHandler(void)
+void PVD_IRQHandler(void)
 {
-  /* USER CODE BEGIN EXTI4_15_IRQn 0 */
+  /* USER CODE BEGIN PVD_IRQn 0 */
 
-  /* USER CODE END EXTI4_15_IRQn 0 */
-  HAL_GPIO_EXTI_IRQHandler(B1_Pin);
-  /* USER CODE BEGIN EXTI4_15_IRQn 1 */
+  /* USER CODE END PVD_IRQn 0 */
+  HAL_PWR_PVD_IRQHandler();
+  /* USER CODE BEGIN PVD_IRQn 1 */
 
-  /* USER CODE END EXTI4_15_IRQn 1 */
+  /* USER CODE END PVD_IRQn 1 */
+}
+
+/**
+  * @brief This function handles EXTI line 0 and line 1 interrupts.
+  */
+void EXTI0_1_IRQHandler(void)
+{
+  /* USER CODE BEGIN EXTI0_1_IRQn 0 */
+
+  /* USER CODE END EXTI0_1_IRQn 0 */
+  HAL_GPIO_EXTI_IRQHandler(BTN1_Pin);
+  /* USER CODE BEGIN EXTI0_1_IRQn 1 */
+
+  /* USER CODE END EXTI0_1_IRQn 1 */
 }
 
 /* USER CODE BEGIN 1 */

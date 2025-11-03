@@ -25,5 +25,7 @@ SUBDIRS := \
 Core/Src \
 Core/Src/sensirion \
 Core/Startup \
+Drivers/BSP/Components/ST25DV \
 Drivers/STM32L0xx_HAL_Driver/Src \
+NFC/Target \
 

@@ -30,7 +30,9 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
  ../Core/Src/sensirion/sensirion.h ../Core/Src/sensirion/sht4x_i2c.h \
  ../Core/Src/sensirion/sensirion_config.h \
  ../Core/Src/sensirion/sensirion_common.h ../Core/Inc/ssd1306.h \
- ../Core/Inc/cropwatch_logo.h
+ ../Core/Inc/cropwatch_logo.h ../Core/Inc/thermometer_icon.h \
+ ../Drivers/BSP/Components/ST25DV/st25dv.h \
+ ../Drivers/BSP/Components/ST25DV/st25dv_reg.h
 ../Core/Inc/main.h:
 ../Drivers/STM32L0xx_HAL_Driver/Inc/stm32l0xx_hal.h:
 ../Core/Inc/stm32l0xx_hal_conf.h:
@@ -66,3 +68,6 @@ Core/Src/main.o: ../Core/Src/main.c ../Core/Inc/main.h \
 ../Core/Src/sensirion/sensirion_common.h:
 ../Core/Inc/ssd1306.h:
 ../Core/Inc/cropwatch_logo.h:
+../Core/Inc/thermometer_icon.h:
+../Drivers/BSP/Components/ST25DV/st25dv.h:
+../Drivers/BSP/Components/ST25DV/st25dv_reg.h:
