@@ -30,7 +30,6 @@
 #include "ssd1306.h"
 #include "cropwatch_logo.h"
 #include "thermometer_icon.h"
-#include "st25dv.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -107,8 +106,8 @@ int main(void)
   MX_USART2_UART_Init();
   MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
-  char sensor_serial_1[9] = {0};
-  char sensor_serial_2[9] = {0};
+  char sensor_serial_1[11] = {0};
+  char sensor_serial_2[11] = {0};
 
   scan_i2c_bus();
 

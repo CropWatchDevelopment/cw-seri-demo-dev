@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <inttypes.h>
 
 extern I2C_HandleTypeDef hi2c1;
 
@@ -45,14 +47,12 @@ uint16_t calculated_hum_2;
 
 int16_t i2c_error_code = 0;
 
-static void format_serial_hex(uint32_t value, char* buffer) {
-    for (int8_t idx = 7; idx >= 0; --idx) {
-        uint8_t nibble = (uint8_t)(value & 0x0FU);
-        buffer[idx] = (char)((nibble < 10U) ? ('0' + nibble)
-                                            : ('A' + (nibble - 10U)));
-        value >>= 4U;
+static void format_serial_decimal(uint32_t value, char* buffer,
+                                  size_t buffer_len) {
+    if (!buffer || buffer_len == 0U) {
+        return;
     }
-    buffer[8] = '\0';
+    (void)snprintf(buffer, buffer_len, "%" PRIu32, value);
 }
 
 void scan_i2c_bus(void)
@@ -131,7 +131,7 @@ int sensor_init_and_read(void)
 int sensirion_get_serial_string(uint8_t i2c_address,
                                 char* serial_out,
                                 size_t serial_out_len) {
-    if (!serial_out || serial_out_len < 9) {
+    if (!serial_out || serial_out_len < 11U) {
         return -1;
     }
 
@@ -144,6 +144,6 @@ int sensirion_get_serial_string(uint8_t i2c_address,
         return i2c_error_code;
     }
 
-    format_serial_hex(raw_serial, serial_out);
+    format_serial_decimal(raw_serial, serial_out, serial_out_len);
     return 0;
 }

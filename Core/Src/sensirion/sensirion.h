@@ -27,7 +27,7 @@ void scan_i2c_bus(void);
 int  sensor_init_and_read(void);
 int  sensirion_get_serial_string(uint8_t i2c_address,
                                  char* serial_out,
-                                 size_t serial_out_len);
+                                 size_t serial_out_len); // serial_out >= 11 bytes for decimal + NUL
 
 // Conversion helpers (exported)
 int16_t  sht4x_temp_centi_from_ticks(uint16_t t_ticks);
